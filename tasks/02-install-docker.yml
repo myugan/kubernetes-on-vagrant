@@ -1,0 +1,44 @@
+---
+- name: Add an apt signing key for Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add apt repository for stable version
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Install docker and its dependecies
+  apt: 
+    name: docker-ce=18.06.2~ce~3-0~ubuntu
+    state: present
+    update_cache: yes
+
+- name: Change docker driver to systemd
+  shell: |
+    cat > /etc/docker/daemon.json <<EOF
+    {
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "log-driver": "json-file",
+        "storage-driver": "overlay2"
+    }
+    EOF
+
+- name: Create docker service
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: Add vagrant users to docker group
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+
+- name: Start docker service
+  service:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

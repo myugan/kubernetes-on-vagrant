@@ -1,0 +1,5 @@
+---
+- include_tasks: 01-depend.yml
+- include_tasks: 02-install-docker.yml
+- include_tasks: 03-install-k8s.yml
+- include_tasks: 04-join.yml

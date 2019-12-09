@@ -1,0 +1,12 @@
+---
+- name: Provision kubernetes cluster
+  hosts: all
+  become: True
+  gather_facts: False
+
+  tasks:
+    - import_tasks: tasks/master.yml
+      tags: master
+
+    - import_tasks: tasks/worker.yml
+      tags: worker
